@@ -15,14 +15,13 @@ var mainView = new MAF.Class({
     createView: function () {
         // Reference to the current view
 
-        var client=new WebSocket("ws://api.iflix.io:5445");
-        var self=this;
-        client.onmessage=function(message){
+        var client = new WebSocket("ws://api.iflix.io:5445");
+        var self = this;
+        client.onmessage = function (message) {
             console.log(message.data);
-           var data = JSON.parse(message.data);
-            if(data.action==="play"){
-                self.elements.loader.hide();
-                playVideo(self,data);
+            var data = JSON.parse(message.data);
+            if (data.action === "play") {
+                playVideo(self, data);
                 console.log(data.url)
             }
         };
@@ -88,15 +87,15 @@ var mainView = new MAF.Class({
 });
 
 var playVideo = function (parrent, data) {
-    var player = new MAF.control.MediaTransportOverlay({
+    var playerControls = new MAF.control.MediaTransportOverlay({
+        fadeTimeout: false,
         theme: false,
         forwardseekButton: true,
         backwardseekButton: true,
-        fadeTimeout: 5,
         events: {
             onTransportButtonPress: function (event) {
                 var timeIndex;
-                switch(event.payload.button) {
+                switch (event.payload.button) {
                     case 'forward':
                         event.stop();
                         MAF.mediaplayer.control.seek(60);
@@ -104,7 +103,7 @@ var playVideo = function (parrent, data) {
                     case 'rewind':
                         event.stop();
                         timeindex = MAF.mediaplayer.player && MAF.mediaplayer.player.currentTimeIndex || null;
-                        if (timeindex && (timeindex - (60*1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
+                        if (timeindex && (timeindex - (60 * 1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
                             MAF.mediaplayer.playlist.previousEntry();
                         } else if (view.visible && MAF.mediaplayer.player.currentPlayerState === MAF.mediaplayer.constants.states.PLAY) {
                             MAF.mediaplayer.control.seek(-60);
@@ -117,7 +116,7 @@ var playVideo = function (parrent, data) {
                     case 'backwardseek':
                         event.stop();
                         timeindex = MAF.mediaplayer.player && MAF.mediaplayer.player.currentTimeIndex || null;
-                        if (timeindex && (timeindex - (600*1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
+                        if (timeindex && (timeindex - (600 * 1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
                             MAF.mediaplayer.playlist.previousEntry();
                         } else {
                             MAF.mediaplayer.control.rewind();
@@ -131,10 +130,10 @@ var playVideo = function (parrent, data) {
                 }
             }
         }
-    }).appendTo(parrentgi);
+    }).appendTo(parrent);
     // Add a new playlist with the video to the player
     var entry = new MAF.media.PlaylistEntry({
-        url: 'http://api.iflix.io/?action=play&index='+data.index+'&magnet='+data.url,
+        url: 'http://api.iflix.io/?action=play&index=' + data.index + '&magnet=' + data.url,
         asset: new MAF.media.Asset('iFlix Video')
     });
     MAF.mediaplayer.playlist.set(new MAF.media.Playlist().addEntry(entry));
