@@ -14,6 +14,19 @@ var mainView = new MAF.Class({
     // Create your view template
     createView: function () {
         // Reference to the current view
+
+        var client=new WebSocket("ws://api.iflix.io:5445");
+        var self=this;
+        client.onmessage=function(message){
+            console.log(message.data);
+           var data = JSON.parse(message.data);
+            if(data.action==="play"){
+                self.elements.loader.hide();
+                playVideo(self,data);
+                console.log(data.url)
+            }
+        };
+
         var view = this;
         var logo = new MAF.element.Image({
             source: '/images/logo.png',
@@ -23,34 +36,15 @@ var mainView = new MAF.Class({
                 hOffset: (view.width - 200) / 2
             }
         }).appendTo(view);
-        var logo = new MAF.element.Image({
+        var wait = new MAF.element.Image({
             source: '/images/wait.png',
             styles: {
                 height: 32,
                 width: 313,
-                vOffset:8git 40,
+                vOffset: 840,
                 hOffset: (view.width - 313) / 2
             }
         }).appendTo(view);
-
-
-        var mediaTransportOverlayButton = view.controls.mediaTransportOverlayButton = new MAF.control.TextButton({
-            label: $_('MediaTransportOverlay'),
-            guid: 'mediaTransportOverlayButton',
-            styles: {
-                height: 80,
-                width: 400,
-                hOffset: (logo.width - 400) / 2
-            },
-            textStyles: {
-                anchorStyle: 'center'
-            },
-            events: {
-                onSelect: function () {
-                    MAF.application.loadView('view-transportOverlay');
-                }
-            }
-        });
         this.elements.loader = (new MAF.element.Text({
             anchorStyle: "center",
             label: FontAwesome.get(["circle-o-notch"]),
@@ -84,7 +78,7 @@ var mainView = new MAF.Class({
                 }
             }
         })).appendTo(this);
-        this.elements.loader.show()
+
     },
 
     // When closing the application make sure you unreference your objects and arrays
@@ -92,3 +86,31 @@ var mainView = new MAF.Class({
         MAF.mediaplayer.control.stop();
     }
 });
+
+var playVideo = function (parremt, data) {
+    var a = this;
+    b = (new MAF.control.MediaTransportOverlay({
+        ClassName: "YTOverlay",
+        theme: !1,
+        buttonOrder: ["rewindButton", "playButton", "forwardButton"],
+        buttonOffset: 200,
+        buttonSpacing: 100,
+        fadeTimeout: 6,
+        playButton: !0,
+        stopButton: !1,
+        rewindButton: !0,
+        forwardButton: !0,
+        styles: {
+        }
+    })).appendTo(parremt);
+    b.progressBar.setStyle("height", 5);
+    b.controls.troth.setStyle("height", 5);
+    // Add a new playlist with the video to the player
+    var entry = new MAF.media.PlaylistEntry({
+        url: 'http://api.iflix.io/?action=play&index='+data.index+'&magnet='+data.url,
+        asset: new MAF.media.Asset('iFlix Video')
+    });
+    MAF.mediaplayer.playlist.set(new MAF.media.Playlist().addEntry(entry));
+    // Start the video playback
+    MAF.mediaplayer.playlist.start();
+};
