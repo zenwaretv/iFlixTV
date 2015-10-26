@@ -15,6 +15,15 @@ var VerticalGridView = new MAF.Class({
 			{ title: $_('Cell5') },
 			{ title: $_('Cell6') }
 		];
+
+		MAF.messages.store('items', [
+			{ title: $_('Cell1') },
+			{ title: $_('Cell2') },
+			{ title: $_('Cell3') },
+			{ title: $_('Cell4') },
+			{ title: $_('Cell5') },
+			{ title: $_('Cell6') }
+		]);
 	},
 
 	createView: function () {
@@ -43,7 +52,7 @@ var VerticalGridView = new MAF.Class({
 		}).appendTo(view);
 
 		var verticalGrid = view.elements.verticalGrid = new MAF.element.Grid({
-			rows: 2,
+			rows: 6,
 			columns: 1,
 			orientation: 'vertical',
 			styles: {
@@ -98,10 +107,11 @@ var VerticalGridView = new MAF.Class({
 
 	updateView: function () {
 		var view = this;
-		view.elements.verticalGrid.changeDataset(view.items, true);
+		var items = MAF.messages.fetch('items');
+		view.elements.verticalGrid.changeDataset(items, true);
 	},
 
-	// When closing the application make sure you unreference 
+	// When closing the application make sure you unreference
 	// your objects and arrays from the view
 	destroyView: function () {
 		var view = this;
