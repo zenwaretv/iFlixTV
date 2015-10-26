@@ -1,5 +1,6 @@
 // Include your views
 include("Javascript/views/mainView.js");
+include("Javascript/views/playerView.js");
 
 // Set base glow and focus theme
 Theme.set({
@@ -40,7 +41,8 @@ Theme.set({
 MAF.application.init({
 	views: [
 		{ id: 'view-mainView', viewClass: mainView },
-		{ id: 'view-About', viewClass: MAF.views.AboutBox } // Use standard About view
+        { id: 'view-playerView', viewClass: playerView },
+        { id: 'view-About', viewClass: MAF.views.AboutBox } // Use standard About view
 	],
 	defaultViewId: 'view-mainView',
 	settingsViewId: 'view-About'
