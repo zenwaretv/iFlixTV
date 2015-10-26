@@ -15,6 +15,11 @@ Theme.set({
 			backgroundColor: '#5f429c'
 		}
 	},
+    ControlMediaTransportOverlayBody: {
+        styles: {
+            backgroundColor: "rgba(0,0,0,0) !important"
+        }
+    },
 	ControlMediaTransportOverlayButton: {
 		styles: {
 			fontSize: 30,
