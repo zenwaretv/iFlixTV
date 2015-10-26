@@ -1,11 +1,11 @@
 {
 	"identifier": "com.metrological.app.VideoTemplate",
-	"name": "Video Template",
+	"name": "iFlix",
 	"version": "0.0.1",
-	"author": "Metrological",
-	"company": "Metrological",
-	"copyright": "Metrological",
-	"description": "An easy template to get video playblack in an app",
+	"author": "zenware",
+	"company": "Tres Commas LLC",
+	"copyright": "zenware",
+	"description": "Sharing media has never been easier, stop waiting start watching.",
 	"categories": [
 		"video"
 	],

@@ -33,7 +33,7 @@ var mainView = new MAF.Class({
 					// If the player is not playing, start the video and change the text on the button
 					if (MAF.mediaplayer.player.currentPlayerState !== MAF.mediaplayer.constants.states.PLAY){
 						// Add a new playlist with the video to the player
-						MAF.mediaplayer.playlist.set(new MAF.media.Playlist().addEntryByURL('http://video.metrological.com/aquarium.mp4'));
+						MAF.mediaplayer.playlist.set(new MAF.media.Playlist().addEntryByURL(' http://172.16.0.141:8888/'));
 						// Start the video playback
 						MAF.mediaplayer.playlist.start();
 						this.setText($_('DirectStop'));

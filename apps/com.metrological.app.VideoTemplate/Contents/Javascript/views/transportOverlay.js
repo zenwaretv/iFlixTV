@@ -47,7 +47,7 @@ var transportOverlay = new MAF.Class({
 
 		// Add a new playlist with the video to the player
 		var entry = new MAF.media.PlaylistEntry({
-			url: 'http://video.metrological.com/aquarium.mp4',
+			url: 'http://172.16.0.141:8888/',
 			asset: new MAF.media.Asset('Aquarium')
 		});
 		MAF.mediaplayer.playlist.set(new MAF.media.Playlist().addEntry(entry));
