@@ -43,7 +43,7 @@ var mainView = new MAF.Class({
 		}
 
         var logo = view.elements.logo = new MAF.element.Image({
-            source: '/images/logo.png',
+            source: '/Images/logo.png',
             styles: {
                 height: 150,
                 width: 200,
@@ -119,7 +119,7 @@ var mainView = new MAF.Class({
 		}).appendTo(view);
 
 		view.elements.torrentFiles = new MAF.element.Grid({
-			rows: 6,
+			rows: 12,
 			columns: 1,
 			orientation: 'vertical',
 			styles: {
@@ -164,10 +164,10 @@ var mainView = new MAF.Class({
 						width: cell.width,
 						height: cell.height,
 						color: 'white',
-						fontSize: 26,
+						fontSize: 23,
 						anchorStyle: 'left',
 						wrap: true,
-						hOffset: 25,
+						hOffset: 30,
 						vOffset: 10,
 					}
 				}).appendTo(cell);
@@ -175,7 +175,17 @@ var mainView = new MAF.Class({
 				return cell;
 			},
 			cellUpdater: function (cell, data) {
-				cell.title.setText($_(data.name));
+				var name = data.name;
+				if (name.length > 35) {
+					name = name.substr(0, 35) + '...';
+				}
+
+				var icon = FontAwesome.get(['file', 'fw']);
+				if (data.type.indexOf('video') === 0) {
+					icon = FontAwesome.get(['play-circle-o', 'fw']);
+				}
+
+				cell.title.setText($_(icon + ' ' + name));
 				log(data);
 			}
 		}).appendTo(view);
@@ -197,25 +207,54 @@ var mainView = new MAF.Class({
 var playVideo = function (parent, data) {
 	stopVideo();
 
-    var a = this;
-    b = (new MAF.control.MediaTransportOverlay({
-        ClassName: 'YTOverlay',
-        theme: !1,
-        buttonOrder: ['rewindButton', 'playButton', 'forwardButton'],
-        buttonOffset: 200,
-        buttonSpacing: 100,
-        fadeTimeout: 6,
-        playButton: !0,
-        stopButton: !1,
-        rewindButton: !0,
-        forwardButton: !0,
-        styles: {}
-    })).appendTo(parent);
-    b.progressBar.setStyle('height', 5);
-    b.controls.troth.setStyle('height', 5);
+    var playerControls = new MAF.control.MediaTransportOverlay({
+        fadeTimeout: false,
+        theme: false,
+        forwardseekButton: true,
+        backwardseekButton: true,
+        events: {
+            onTransportButtonPress: function (event) {
+                var timeIndex;
+                switch (event.payload.button) {
+                    case 'forward':
+                        event.stop();
+                        MAF.mediaplayer.control.seek(60);
+                        break;
+                    case 'rewind':
+                        event.stop();
+                        timeindex = MAF.mediaplayer.player && MAF.mediaplayer.player.currentTimeIndex || null;
+                        if (timeindex && (timeindex - (60 * 1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
+                            MAF.mediaplayer.playlist.previousEntry();
+                        } else if (view.visible && MAF.mediaplayer.player.currentPlayerState === MAF.mediaplayer.constants.states.PLAY) {
+                            MAF.mediaplayer.control.seek(-60);
+                        }
+                        break;
+                    case 'forwardseek':
+                        event.stop();
+                        MAF.mediaplayer.control.forward();
+                        break;
+                    case 'backwardseek':
+                        event.stop();
+                        timeindex = MAF.mediaplayer.player && MAF.mediaplayer.player.currentTimeIndex || null;
+                        if (timeindex && (timeindex - (600 * 1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
+                            MAF.mediaplayer.playlist.previousEntry();
+                        } else {
+                            MAF.mediaplayer.control.rewind();
+                        }
+                        break;
+                    case 'stop':
+                        if (!view.frozen) {
+                            MAF.application.previousView();
+                        }
+                        break;
+                }
+            }
+        }
+    }).appendTo(parent);
+
     // Add a new playlist with the video to the player
     var entry = new MAF.media.PlaylistEntry({
-        url: 'http://api.iflix.io/?action=play&index='+data.index+'&magnet='+data.url,
+        url: 'http://api.iflix.io/?action=play&index=' + data.index + '&magnet=' + data.url,
         asset: new MAF.media.Asset('iFlix Video')
     });
     MAF.mediaplayer.playlist.set(new MAF.media.Playlist().addEntry(entry));
