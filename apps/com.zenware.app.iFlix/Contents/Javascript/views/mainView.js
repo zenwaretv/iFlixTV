@@ -87,24 +87,51 @@ var mainView = new MAF.Class({
     }
 });
 
-var playVideo = function (parremt, data) {
-    var a = this;
-    b = (new MAF.control.MediaTransportOverlay({
-        ClassName: "YTOverlay",
-        theme: !1,
-        buttonOrder: ["rewindButton", "playButton", "forwardButton"],
-        buttonOffset: 200,
-        buttonSpacing: 100,
-        fadeTimeout: 6,
-        playButton: !0,
-        stopButton: !1,
-        rewindButton: !0,
-        forwardButton: !0,
-        styles: {
+var playVideo = function (parrent, data) {
+    var player = new MAF.control.MediaTransportOverlay({
+        theme: false,
+        forwardseekButton: true,
+        backwardseekButton: true,
+        fadeTimeout: 5,
+        events: {
+            onTransportButtonPress: function (event) {
+                var timeIndex;
+                switch(event.payload.button) {
+                    case 'forward':
+                        event.stop();
+                        MAF.mediaplayer.control.seek(60);
+                        break;
+                    case 'rewind':
+                        event.stop();
+                        timeindex = MAF.mediaplayer.player && MAF.mediaplayer.player.currentTimeIndex || null;
+                        if (timeindex && (timeindex - (60*1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
+                            MAF.mediaplayer.playlist.previousEntry();
+                        } else if (view.visible && MAF.mediaplayer.player.currentPlayerState === MAF.mediaplayer.constants.states.PLAY) {
+                            MAF.mediaplayer.control.seek(-60);
+                        }
+                        break;
+                    case 'forwardseek':
+                        event.stop();
+                        MAF.mediaplayer.control.forward();
+                        break;
+                    case 'backwardseek':
+                        event.stop();
+                        timeindex = MAF.mediaplayer.player && MAF.mediaplayer.player.currentTimeIndex || null;
+                        if (timeindex && (timeindex - (600*1000)) < 0 && MAF.mediaplayer.playlist.currentIndex > 0) {
+                            MAF.mediaplayer.playlist.previousEntry();
+                        } else {
+                            MAF.mediaplayer.control.rewind();
+                        }
+                        break;
+                    case 'stop':
+                        if (!view.frozen) {
+                            MAF.application.previousView();
+                        }
+                        break;
+                }
+            }
         }
-    })).appendTo(parremt);
-    b.progressBar.setStyle("height", 5);
-    b.controls.troth.setStyle("height", 5);
+    }).appendTo(parrentgi);
     // Add a new playlist with the video to the player
     var entry = new MAF.media.PlaylistEntry({
         url: 'http://api.iflix.io/?action=play&index='+data.index+'&magnet='+data.url,
