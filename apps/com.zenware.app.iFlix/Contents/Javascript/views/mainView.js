@@ -5,13 +5,11 @@ var mainView = new MAF.Class({
     initialize: function() {
         var view = this;
         view.parent(); // Call super class constructor
-        MAF.mediaplayer.init(); // Initialize mediaplayer
     },
     // Create your view template
     createView: function() {
         // Reference to the current view
         var view = this;
-        view.createWs();
 
         var logo = view.elements.logo = new MAF.element.Image({
             source: '/Images/logo.png',
@@ -26,10 +24,39 @@ var mainView = new MAF.Class({
             label: 'Sarmale',
             styles: {
                 // hOffset: 15,
+                width: '80%',
                 fontSize: 26,
                 opacity: 0,
                 vAlign: 'bottom',
                 hAlign: 'center'
+            },
+            method: {
+                hide: function () {
+                    var id = 'status';
+                    log('almost hide', id);
+                    log(this.retrieve(id));
+                    if (true === this.retrieve(id)) {
+                        log('should hide', id);
+                        this.eliminate(id);
+                        this.animate({
+                            opacity: 0,
+                            duration: 0.2
+                        });
+                    }
+                },
+                show: function () {
+                    var id = 'status';
+                    log('almost show', id);
+                    log(this.retrieve(id));
+                    if (true !== this.retrieve(id)) {
+                        log('should show', id);
+                        this.store(id, true);
+                        this.animate({
+                            opacity: 1,
+                            duration: 0.2
+                        });
+                    }
+                }
             }
         }).appendTo(view);
         view.elements.wait = new MAF.element.Image({
@@ -54,7 +81,10 @@ var mainView = new MAF.Class({
             methods: {
             	hide: function () {
             		var id = 'loader';
+                    log('almost hide', id);
+                    log(this.retrieve(id));
             		if (true === this.retrieve(id)) {
+                        log('should hide', id);
 			            this.eliminate(id);
 			            this.animate({
 			                opacity: 0,
@@ -64,7 +94,10 @@ var mainView = new MAF.Class({
             	},
             	show: function () {
             		var id = 'loader';
+                    log('almost show', id);
+                    log(this.retrieve(id));
 			        if (true !== this.retrieve(id)) {
+                        log('should show', id);
 			            this.store(id, true);
 			            this.animate({
 			                opacity: 1,
@@ -74,6 +107,7 @@ var mainView = new MAF.Class({
             	}
             }
         }).appendTo(view);
+        this.elements.loader.show();
         var scroller = new MAF.control.ScrollIndicator({
             theme: false,
             styles: {
@@ -166,22 +200,20 @@ var mainView = new MAF.Class({
             }
         }).appendTo(view);
         scroller.attachToSource(view.elements.torrentFiles);
-        var onStateChange = function(event) {
-            var state = event && event.payload && event.payload.newState,
-                states = MAF.mediaplayer.constants.states;
-            log(state);
-            switch (state) {
-                case states.PLAY:
-                    view.elements.loader.hide();
-                    break;
-            }
-        };
-        onStateChange.subscribeTo(MAF.mediaplayer, 'onStateChange');
+
+        view.createWs();
     },
     setStatus: function(status) {
-        log(status);
-    	// this.elements.status.setText(status);
-    	// this.show('status');
+        // log(this);
+        if (status && status.length > 0) {
+            log(this.elements);
+            log(status);
+            this.elements.status.hide();
+            this.elements.status.setText($_(status));
+            this.elements.status.show();
+        } else {
+            this.elements.status.hide();
+        }
     },
     // When closing the application make sure you unreference your objects and arrays
     destroyView: function() {
@@ -196,15 +228,19 @@ var mainView = new MAF.Class({
     },
     createWs: function(retry) {
         var view = this;
-        view.setStatus('Wait for connection');
+        view.setStatus('Waiting for connection');
 
         var ws = new WebSocket('ws://api.iflix.io:5445');
         if (ws) {
             ws.onopen = function() {
                 log('WS OPENED');
                 // view.hideStatus();
-            }.bind(view);
+                view.setStatus('Waiting for data from phone');
+            };
             ws.onmessage = function(msg) {
+                log(msg);
+                view.setStatus.call(view);
+                view.elements.loader.hide.call(view);
                 var data = JSON.parse(msg.data);
                 switch (data.action) {
                     case 'play':
@@ -214,11 +250,11 @@ var mainView = new MAF.Class({
                         view.setTorrent(data);
                         break;
                 }
-            }.bind(view);
+            };
             ws.onclose = function() {
                 view.createWs();
                 log('WS CLOSED');
-            }.bind(view);
+            };
         } else {
             retry = typeof(retry) !== 'undefined' ? retry + 1 : 1;
             setTimeout(view.createWs, 2000 * retry);
