@@ -192,13 +192,6 @@ var mainView = new MAF.Class({
     playVideo: function(data) {
         MAF.application.loadView('view-playerView',data);
     },
-    stopVideo: function() {
-    	console.log('stopVideo');
-    	console.log(this);
-        MAF.mediaplayer.control.pause();
-        MAF.mediaplayer.control.stop();
-        // MAF.mediaplayer.playlist.clearEntries();
-    },
     status: {
     	waitConn: 'Wait for connection'
     },
@@ -219,7 +212,6 @@ var mainView = new MAF.Class({
                         view.playVideo(data);
                         break;
                     case 'details':
-                        view.stopVideo();
                         view.setTorrent(data);
                         break;
                 }

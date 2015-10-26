@@ -47,7 +47,6 @@ var playerView = new MAF.Class({
 
     // When view is created or returning to view the view is updated
     updateView: function () {
-        // Reference to the current view
         var view = this;
 
         view.onChannelChanged.subscribeTo(MAF.mediaplayer, 'onChannelChange');
