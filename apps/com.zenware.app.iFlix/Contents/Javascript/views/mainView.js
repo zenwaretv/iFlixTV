@@ -185,6 +185,7 @@ var mainView = new MAF.Class({
         this.elements.torrentFiles.changeDataset(data.files, true);
     },
     playVideo: function(data) {
+
         MAF.application.loadView('view-playerView', data);
     },
     createWs: function(retry) {

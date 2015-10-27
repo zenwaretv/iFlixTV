@@ -425,7 +425,8 @@ define('MAF.control.MediaTransportOverlay', function () {
 		},
 
 		formatTime: function(duration) {
-			if (duration) {
+		    if(false){
+		//	if (duration && numeral) {
 				return numeral(Math.floor(duration)).format('00:00:00');
 			} else {
 				return '00:00:00';

@@ -55,7 +55,6 @@ var playerView = new MAF.Class({
 
     // When view is created or returning to view the view is updated
     updateView: function () {
-        // Reference to the current view
         var view = this;
 
         view.onChannelChanged.subscribeTo(MAF.mediaplayer, 'onChannelChange');
@@ -66,11 +65,10 @@ var playerView = new MAF.Class({
         var playlist = new MAF.media.Playlist();
         playlist.addEntryByURL(videoUrl);
         MAF.mediaplayer.playlist.set(playlist);
-        // Start the video playback
         setTimeout(function () {
-            console.log('can start');
             MAF.mediaplayer.playlist.start();
-        }, 300);
+
+        }, 3000)
     },
 
     // The hideView is called when you're leaving this view
@@ -81,7 +79,7 @@ var playerView = new MAF.Class({
         view.gotKeyPress.unsubscribeFrom(MAF.application, 'onWidgetKeyPress');
     },
 
-    destroyView: function() {
+    destroyView: function () {
         MAF.mediaplayer.control.stop();
     }
 });
