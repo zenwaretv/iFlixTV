@@ -17,9 +17,9 @@ var playerView = new MAF.Class({
         var playerControls = new MAF.control.MediaTransportOverlay({
             theme: false,
             buttonOrder: ['backwardseekButton', 'rewindButton', 'playButton', 'forwardButton', 'forwardseekButton'],
-            // buttonOffset: 300,
-            // buttonSpacing: 100,
-            fadeTimeout: 0,
+            buttonOffset: 300,
+            buttonSpacing: 100,
+            fadeTimeout: 8,
             playButton: true,
             stopButton: false,
             rewindButton: true,
@@ -28,11 +28,19 @@ var playerView = new MAF.Class({
             backwardseekButton: true,
             styles: {
                 vOffset: 100,
-                vAlign: 'bottom'
+                // vAlign: 'bottom'
             }
         }).appendTo(view);
         playerControls.progressBar.setStyle('height', 5);
         playerControls.controls.troth.setStyle('height', 5);
+        playerControls.controls.intervalText.setStyles({
+            hOffset: 0,
+            vOffset: 0
+        });
+        playerControls.controls.durationText.setStyles({
+            hOffset: 0,
+            vOffset: 0
+        });
     },
 
     gotKeyPress: function (event) {
@@ -70,5 +78,9 @@ var playerView = new MAF.Class({
         var view = this;
         view.onChannelChanged.unsubscribeFrom(MAF.mediaplayer, 'onChannelChange');
         view.gotKeyPress.unsubscribeFrom(MAF.application, 'onWidgetKeyPress');
+    },
+
+    destroyView: function() {
+        MAF.mediaplayer.control.stop();
     }
 });

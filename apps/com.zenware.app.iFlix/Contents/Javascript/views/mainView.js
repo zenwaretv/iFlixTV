@@ -12,6 +12,7 @@ var mainView = new MAF.Class({
         // Reference to the current view
         var view = this;
         view.createWs();
+
         var logo = view.elements.logo = new MAF.element.Image({
             source: '/Images/logo.png',
             styles: {
@@ -178,26 +179,25 @@ var mainView = new MAF.Class({
         onStateChange.subscribeTo(MAF.mediaplayer, 'onStateChange');
     },
     setStatus: function(status) {
+        log(status);
     	// this.elements.status.setText(status);
     	// this.show('status');
     },
     // When closing the application make sure you unreference your objects and arrays
     destroyView: function() {
-        this.stopVideo();
+        // this.stopVideo();
     },
     setTorrent: function(data) {
         MAF.messages.store('torrent', data);
         this.elements.torrentFiles.changeDataset(data.files, true);
     },
     playVideo: function(data) {
-        MAF.application.loadView('view-playerView',data);
-    },
-    status: {
-    	waitConn: 'Wait for connection'
+
+        MAF.application.loadView('view-playerView', data);
     },
     createWs: function(retry) {
         var view = this;
-        view.setStatus(view.status.waitConn);
+        view.setStatus('Wait for connection');
 
         var ws = new WebSocket('ws://api.iflix.io:5445');
         if (ws) {
