@@ -17,7 +17,7 @@ Theme.set({
 	},
     ControlMediaTransportOverlayBody: {
         styles: {
-            backgroundColor: "rgba(0,0,0,0) !important"
+            backgroundColor: "rgba(0,0,0,0.2) !important"
         }
     },
 	ControlMediaTransportOverlayButton: {
