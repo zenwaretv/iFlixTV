@@ -12,10 +12,8 @@ var mainView = new MAF.Class({
     },
     // Create your view template
     createView: function() {
-        console = c;
         // Reference to the current view
         var view = this;
-        c.log('test2');
         var logo = view.elements.logo = new MAF.element.Image({
             source: '/Images/logo.png',
             styles: {
@@ -60,9 +58,9 @@ var mainView = new MAF.Class({
             methods: {
             	hide: function () {
             		var id = 'loader';
-                    log('almost hide', id);
+                    c.log('almost hide', id);
             		// if (true === this.retrieve(id)) {
-                        log('should hide', id);
+                        c.log('should hide', id);
 			            this.eliminate(id);
 			            this.animate({
 			                opacity: 0,
@@ -72,10 +70,10 @@ var mainView = new MAF.Class({
             	},
             	show: function () {
             		var id = 'loader';
-                    log('almost show', id);
+                    c.log('almost show', id);
                     log(this.retrieve(id));
 			        // if (true !== this.retrieve(id)) {
-                        log('should show', id);
+                        c.log('should show', id);
 			            this.store(id, true);
 			            this.animate({
 			                opacity: 1,
@@ -208,14 +206,14 @@ var mainView = new MAF.Class({
         var ws = new WebSocket('ws://api.iflix.io:5445');
         if (ws) {
             ws.onopen = function() {
-                log('WS OPENED');
+                c.log('WS OPENED');
                 // view.hideStatus();
 
                 view.elements.status.setText('Waiting for data from phone');
             };
             ws.onmessage = function(msg) {
-                console.log(msg);
-            //    view.elements.status.setText('');
+                c.log(msg);
+                view.elements.status.setText('');
                 view.elements.loader.hide();
                 var data = JSON.parse(msg.data);
                 switch (data.action) {
@@ -223,7 +221,6 @@ var mainView = new MAF.Class({
                         view.playVideo(data);
                         break;
                     case 'details':
-                        alert("LAPTE");
                         if (MAF.application.getViewProperty('view-playerView', 'visible')){
                             MAF.application.previousView();
                         }
@@ -233,7 +230,7 @@ var mainView = new MAF.Class({
             };
             ws.onclose = function() {
                 view.createWs();
-                log('WS CLOSED');
+                c.log('WS CLOSED');
             };
         } else {
             retry = typeof(retry) !== 'undefined' ? retry + 1 : 1;

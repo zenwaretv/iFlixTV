@@ -11,9 +11,12 @@ var playerView = new MAF.Class({
 
     // Create your view template
     createView: function () {
-
         // Reference to the current view
         var view = this;
+
+        // Initialize mediaplayer for the overlay to hook on
+        MAF.mediaplayer.init();
+
         // Create the Media Transport Overlay
         var playerControls = new MAF.control.MediaTransportOverlay({
             theme: false,
