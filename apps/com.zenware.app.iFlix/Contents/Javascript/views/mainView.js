@@ -49,8 +49,8 @@ var mainView = new MAF.Class({
             anchorStyle: 'center',
             label: FontAwesome.get(['circle-o-notch', 'spin']),
             styles: {
-                hOffset: 35,
-                vOffset: 0,
+                hOffset: 40,
+                vOffset: 5,
                 fontSize: 80,
                 opacity: 0,
                 // transform: 'translateZ(0)'
@@ -175,6 +175,12 @@ var mainView = new MAF.Class({
     },
     // When closing the application make sure you unreference your objects and arrays
     destroyView: function() {
+        if (this.ws) {
+            c.log('ws destroying');
+            this.ws.close();
+            c.log('ws destroyed');
+            // MAF.messages.fetch('ws').close();
+        }
         // this.stopVideo();
     },
     setTorrent: function(data) {
@@ -203,7 +209,8 @@ var mainView = new MAF.Class({
         var view = this;
         view.elements.status.setText('Waiting for connection');
 
-        var ws = new WebSocket('ws://api.iflix.io:5445');
+        var ws = view.ws = new WebSocket('ws://api.iflix.io:5445');
+        // MAF.messages.store('ws', ws);
         if (ws) {
             ws.onopen = function() {
                 c.log('WS OPENED');
@@ -230,8 +237,8 @@ var mainView = new MAF.Class({
                 }
             };
             ws.onclose = function() {
-                view.createWs();
                 c.log('WS CLOSED');
+                // view.createWs();
             };
         } else {
             retry = typeof(retry) !== 'undefined' ? retry + 1 : 1;

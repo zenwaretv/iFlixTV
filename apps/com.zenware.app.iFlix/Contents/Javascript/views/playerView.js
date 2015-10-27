@@ -14,7 +14,7 @@ var playerView = new MAF.Class({
         // Reference to the current view
         var view = this;
 
-        // Initialize mediaplayer for the overlay to hook on
+        // // Initialize mediaplayer for the overlay to hook on
         MAF.mediaplayer.init();
 
         // Create the Media Transport Overlay
@@ -65,24 +65,34 @@ var playerView = new MAF.Class({
         view.gotKeyPress.subscribeTo(MAF.application, 'onWidgetKeyPress');
 
         // Add a new playlist with the video to the player
-        if(this.persist.directURL){
-            var videoUrl = this.persist.directURL
-        }else{
-            var videoUrl = 'http://api.iflix.io/?action=play&index=' + this.persist.index + '&magnet=' + this.persist.url;
+        var videoUrl;
+        if (this.persist.directURL){
+            videoUrl = this.persist.directURL
+        } else {
+            videoUrl = 'http://api.iflix.io/?action=play&index=' + this.persist.index + '&magnet=' + this.persist.url;
         }
-        console.log(videoUrl)
+        c.log(videoUrl);
         var playlist = new MAF.media.Playlist();
         playlist.addEntryByURL(videoUrl);
         MAF.mediaplayer.playlist.set(playlist);
-        // TODO: playing state cleared here
+
+        // Sets playing state
+        MAF.mediaplayer.control.pause();
+        MAF.messages.store('videoPlaying', false);
         for (var i = 0; i < 6; i++) {
             setTimeout(function () {
                 c.log('Playing', MAF.mediaplayer.player.currentPlayerState === MAF.mediaplayer.constants.states.PLAY);
+
                 // TODO it needs a playing state, independently from the user behavior
-                if (MAF.mediaplayer.player.currentPlayerState !== MAF.mediaplayer.constants.states.PLAY) {
+                if (MAF.messages.fetch('videoPlaying') !== true &&
+                    MAF.mediaplayer.player.currentPlayerState !== MAF.mediaplayer.constants.states.PLAY
+                ) {
+                    c.log('Trying to start');
                     MAF.mediaplayer.playlist.start();
+                } else {
+                    MAF.messages.store('videoPlaying', true);
                 }
-            }, i * 2000);
+            }, 200 + i * 2000);
         }
     },
 
