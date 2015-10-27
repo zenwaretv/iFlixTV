@@ -214,8 +214,8 @@ var mainView = new MAF.Class({
                 view.elements.status.setText('Waiting for data from phone');
             };
             ws.onmessage = function(msg) {
-                log(msg);
-                view.elements.status.setText('');
+                console.log(msg);
+            //    view.elements.status.setText('');
                 view.elements.loader.hide();
                 var data = JSON.parse(msg.data);
                 switch (data.action) {
@@ -223,6 +223,10 @@ var mainView = new MAF.Class({
                         view.playVideo(data);
                         break;
                     case 'details':
+                        alert("LAPTE");
+                        if (MAF.application.getViewProperty('view-playerView', 'visible')){
+                            MAF.application.previousView();
+                        }
                         view.setTorrent(data);
                         break;
                 }
