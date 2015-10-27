@@ -2,7 +2,6 @@ var isPlayable = function (type) {
     return type.indexOf('video') === 0 ||
         type.indexOf('audio') === 0;
 }
-
 // Create a class and extended it from the MAF.system.SidebarView
 var mainView = new MAF.Class({
     Extends: MAF.system.SidebarView,
