@@ -1,3 +1,8 @@
+var isPlayable = function (type) {
+    return type.indexOf('video') === 0 ||
+        type.indexOf('audio') === 0;
+}
+
 // Create a class and extended it from the MAF.system.SidebarView
 var mainView = new MAF.Class({
     Extends: MAF.system.SidebarView,
@@ -32,16 +37,16 @@ var mainView = new MAF.Class({
                 transform: 'translateZ(0)'
             }
         }).appendTo(view);
-        view.elements.wait = new MAF.element.Image({
-            source: '/Images/wait.png',
-            styles: {
-                height: 32,
-                width: 313,
-                vOffset: 840,
-                opacity: 0,
-                hOffset: (view.width - 313) / 2
-            }
-        }).appendTo(view);
+        // view.elements.wait = new MAF.element.Image({
+        //     source: '/Images/wait.png',
+        //     styles: {
+        //         height: 32,
+        //         width: 313,
+        //         vOffset: 840,
+        //         opacity: 0,
+        //         hOffset: (view.width - 313) / 2
+        //     }
+        // }).appendTo(view);
         view.elements.loader = new MAF.element.Text({
             anchorStyle: 'center',
             label: FontAwesome.get(['circle-o-notch', 'spin']),
@@ -112,20 +117,12 @@ var mainView = new MAF.Class({
                     styles: this.getCellDimensions(),
                     events: {
                         onSelect: function() {
-                            var idx = this.getCellIndex();
+                            var index = this.title.retrieve('index');
                             var torrent = MAF.messages.fetch('torrent');
-                            var torrentType = torrent.files[idx].type;
-
-                            if (torrentType.indexOf('video') === 0 ||
-                            	torrentType.indexOf('audio') === 0
-                            ) {
-	                            view.playVideo({
-	                                url: torrent.magnet,
-	                                index: idx
-	                            });
-                            } else {
-                                view.elements.status.setText('cannot play that format');
-                            }
+                            view.playVideo({
+                                url: torrent.magnet,
+                                index: index
+                            });
                         },
                         onFocus: function() {
                             this.animate({
@@ -170,10 +167,12 @@ var mainView = new MAF.Class({
                 }
 
                 cell.title.setText($_(icon + ' ' + name));
+                cell.title.store('index', data.index);
             }
         }).appendTo(view);
         scroller.attachToSource(view.elements.torrentFiles);
 
+        // Create web socket connection
         view.createWs();
     },
     // When closing the application make sure you unreference your objects and arrays
@@ -182,11 +181,25 @@ var mainView = new MAF.Class({
     },
     setTorrent: function(data) {
         MAF.messages.store('torrent', data);
+        data.files = data.files.map(function (item, idx) {
+            item.index = idx;
+
+            return item;
+        }).filter(function (item) {
+            return isPlayable(item.type);
+        });
         this.elements.torrentFiles.changeDataset(data.files, true);
     },
     playVideo: function(data) {
+        var view = this;
+        var torrent = MAF.messages.fetch('torrent');
+        var torrentType = torrent.files[data.index].type;
 
-        MAF.application.loadView('view-playerView', data);
+        if (isPlayable(torrentType)) {
+            MAF.application.loadView('view-playerView', data);
+        } else {
+            view.elements.status.setText('Cannot play that format');
+        }
     },
     createWs: function(retry) {
         var view = this;

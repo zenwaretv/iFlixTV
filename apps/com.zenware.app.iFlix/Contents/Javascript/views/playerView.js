@@ -67,8 +67,10 @@ var playerView = new MAF.Class({
         MAF.mediaplayer.playlist.set(playlist);
         setTimeout(function () {
             MAF.mediaplayer.playlist.start();
-
-        }, 3000)
+        }, 1000)
+        setTimeout(function () {
+            MAF.mediaplayer.playlist.start();
+        }, 2000)
     },
 
     // The hideView is called when you're leaving this view
