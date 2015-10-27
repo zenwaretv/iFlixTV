@@ -19,44 +19,17 @@ var mainView = new MAF.Class({
                 hOffset: (view.width - 200 * 0.75) / 2
             }
         }).appendTo(view);
-        view.elements.status = new MAF.element.Text({
+        var status = view.elements.status = new MAF.element.Text({
             anchorStyle: 'center',
             label: 'Sarmale',
             styles: {
                 // hOffset: 15,
                 width: '80%',
                 fontSize: 26,
-                opacity: 0,
+                opacity: 1,
                 vAlign: 'bottom',
-                hAlign: 'center'
-            },
-            method: {
-                hide: function () {
-                    var id = 'status';
-                    log('almost hide', id);
-                    log(this.retrieve(id));
-                    if (true === this.retrieve(id)) {
-                        log('should hide', id);
-                        this.eliminate(id);
-                        this.animate({
-                            opacity: 0,
-                            duration: 0.2
-                        });
-                    }
-                },
-                show: function () {
-                    var id = 'status';
-                    log('almost show', id);
-                    log(this.retrieve(id));
-                    if (true !== this.retrieve(id)) {
-                        log('should show', id);
-                        this.store(id, true);
-                        this.animate({
-                            opacity: 1,
-                            duration: 0.2
-                        });
-                    }
-                }
+                hAlign: 'center',
+                transform: 'translateZ(0)'
             }
         }).appendTo(view);
         view.elements.wait = new MAF.element.Image({
@@ -73,37 +46,37 @@ var mainView = new MAF.Class({
             anchorStyle: 'center',
             label: FontAwesome.get(['circle-o-notch', 'spin']),
             styles: {
-                hOffset: 25,
+                hOffset: 35,
                 vOffset: 0,
-                fontSize: 75,
-                opacity: 0
+                fontSize: 80,
+                opacity: 0,
+                // transform: 'translateZ(0)'
             },
             methods: {
             	hide: function () {
             		var id = 'loader';
                     log('almost hide', id);
-                    log(this.retrieve(id));
-            		if (true === this.retrieve(id)) {
+            		// if (true === this.retrieve(id)) {
                         log('should hide', id);
 			            this.eliminate(id);
 			            this.animate({
 			                opacity: 0,
 			                duration: 0.1
 			            });
-			        }
+			        // }
             	},
             	show: function () {
             		var id = 'loader';
                     log('almost show', id);
                     log(this.retrieve(id));
-			        if (true !== this.retrieve(id)) {
+			        // if (true !== this.retrieve(id)) {
                         log('should show', id);
 			            this.store(id, true);
 			            this.animate({
 			                opacity: 1,
 			                duration: 0.2
 			            });
-			        }
+			        // }
             	}
             }
         }).appendTo(view);
@@ -131,7 +104,7 @@ var mainView = new MAF.Class({
             orientation: 'vertical',
             styles: {
                 width: view.width - scroller.width,
-                height: view.height - logo.outerHeight,
+                height: view.height - logo.outerHeight - status.outerHeight,
                 vOffset: logo.outerHeight
             },
             cellCreator: function() {
@@ -151,7 +124,7 @@ var mainView = new MAF.Class({
 	                                index: idx
 	                            });
                             } else {
-                            	view.setStatus('cannot play that format');
+                                view.elements.status.setText('cannot play that format');
                             }
                         },
                         onFocus: function() {
@@ -203,18 +176,6 @@ var mainView = new MAF.Class({
 
         view.createWs();
     },
-    setStatus: function(status) {
-        // log(this);
-        if (status && status.length > 0) {
-            log(this.elements);
-            log(status);
-            this.elements.status.hide();
-            this.elements.status.setText($_(status));
-            this.elements.status.show();
-        } else {
-            this.elements.status.hide();
-        }
-    },
     // When closing the application make sure you unreference your objects and arrays
     destroyView: function() {
         // this.stopVideo();
@@ -228,19 +189,20 @@ var mainView = new MAF.Class({
     },
     createWs: function(retry) {
         var view = this;
-        view.setStatus('Waiting for connection');
+        view.elements.status.setText('Waiting for connection');
 
         var ws = new WebSocket('ws://api.iflix.io:5445');
         if (ws) {
             ws.onopen = function() {
                 log('WS OPENED');
                 // view.hideStatus();
-                view.setStatus('Waiting for data from phone');
+
+                view.elements.status.setText('Waiting for data from phone');
             };
             ws.onmessage = function(msg) {
                 log(msg);
-                view.setStatus.call(view);
-                view.elements.loader.hide.call(view);
+                view.elements.status.setText('');
+                view.elements.loader.hide();
                 var data = JSON.parse(msg.data);
                 switch (data.action) {
                     case 'play':
