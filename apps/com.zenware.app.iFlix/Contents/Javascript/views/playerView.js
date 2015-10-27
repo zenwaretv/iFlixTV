@@ -74,9 +74,14 @@ var playerView = new MAF.Class({
         var playlist = new MAF.media.Playlist();
         playlist.addEntryByURL(videoUrl);
         MAF.mediaplayer.playlist.set(playlist);
-        for (var i = 0; i < 5; i++) {
+        // TODO: playing state cleared here
+        for (var i = 0; i < 6; i++) {
             setTimeout(function () {
-                MAF.mediaplayer.playlist.start();
+                c.log('Playing', MAF.mediaplayer.player.currentPlayerState === MAF.mediaplayer.constants.states.PLAY);
+                // TODO it needs a playing state, independently from the user behavior
+                if (MAF.mediaplayer.player.currentPlayerState !== MAF.mediaplayer.constants.states.PLAY) {
+                    MAF.mediaplayer.playlist.start();
+                }
             }, i * 2000);
         }
     },
