@@ -221,7 +221,8 @@ var mainView = new MAF.Class({
                         view.playVideo(data);
                         break;
                     case 'details':
-                        if (MAF.application.getViewProperty('view-playerView', 'visible')){
+                        c.log('details');
+                        if (MAF.application.getCurrentViewId()!='view-mainView'){
                             MAF.application.previousView();
                         }
                         view.setTorrent(data);
