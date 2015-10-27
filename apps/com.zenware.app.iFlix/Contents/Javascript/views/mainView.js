@@ -12,9 +12,10 @@ var mainView = new MAF.Class({
     },
     // Create your view template
     createView: function() {
+        console = c;
         // Reference to the current view
         var view = this;
-
+        c.log('test2');
         var logo = view.elements.logo = new MAF.element.Image({
             source: '/Images/logo.png',
             styles: {
@@ -25,7 +26,7 @@ var mainView = new MAF.Class({
         }).appendTo(view);
         var status = view.elements.status = new MAF.element.Text({
             anchorStyle: 'center',
-            label: 'Sarmale',
+            label: '',
             styles: {
                 // hOffset: 15,
                 width: '80%',
