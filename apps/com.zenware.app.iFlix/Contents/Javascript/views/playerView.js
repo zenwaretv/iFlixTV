@@ -11,6 +11,7 @@ var playerView = new MAF.Class({
 
     // Create your view template
     createView: function () {
+
         // Reference to the current view
         var view = this;
         // Create the Media Transport Overlay
@@ -61,7 +62,12 @@ var playerView = new MAF.Class({
         view.gotKeyPress.subscribeTo(MAF.application, 'onWidgetKeyPress');
 
         // Add a new playlist with the video to the player
-        var videoUrl = 'http://api.iflix.io/?action=play&index=' + this.persist.index + '&magnet=' + this.persist.url;
+        if(this.persist.directURL){
+            var videoUrl = this.persist.directURL
+        }else{
+            var videoUrl = 'http://api.iflix.io/?action=play&index=' + this.persist.index + '&magnet=' + this.persist.url;
+        }
+        console.log(videoUrl)
         var playlist = new MAF.media.Playlist();
         playlist.addEntryByURL(videoUrl);
         MAF.mediaplayer.playlist.set(playlist);

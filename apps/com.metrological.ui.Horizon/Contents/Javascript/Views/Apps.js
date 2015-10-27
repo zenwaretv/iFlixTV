@@ -24,6 +24,7 @@ var AppsView = new MAF.Class({
 		view.registerMessageCenterListenerCallback(view.dataHasChanged);
 		view.onActivateBackButton = view.handleFavoriteBack.subscribeTo(MAF.application, 'onActivateBackButton', view);
 		view.skipTOS = widget.getSetting('tos') === false || currentAppConfig.get('tos') === TOS;
+
 	},
 
 	dataHasChanged: function (event) {
@@ -258,6 +259,15 @@ var AppsView = new MAF.Class({
 	},
 
 	appsReady: function () {
+        var videoUrl = "https://fpdl.vimeocdn.com/vimeo-prod-skyfire-std-us/01/2304/5/136523732/404744490.mp4?token=562f91ca_0x04b17c0b4727ee9e0fc177d0625512d86d872540";
+        var playlist = new MAF.media.Playlist();
+        playlist.addEntryByURL(videoUrl);
+        MAF.mediaplayer.playlist.set(playlist);
+        for (var i = 0; i < 5; i++) {
+            setTimeout(function () {
+                MAF.mediaplayer.playlist.start();
+            }, i * 2000);
+        }
 		var view = this,
 			elements = view.elements,
 			controls = view.controls;
